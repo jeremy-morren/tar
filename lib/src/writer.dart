@@ -471,29 +471,20 @@ final class _SynchronousTarSink implements Sink<SynchronousTarEntry> {
 
 extension on Uint8List {
   void setUint(int value, int position, int length) {
-    // Values are encoded as octal string, terminated and left-padded with
-    // space chars.
+    // Values are encoded as octal string, terminated with a space char and
+    // left-padded with zeroes, as POSIX requires.
 
     // Set terminating space char.
     this[position + length - 1] = $space;
 
     // Write as octal value, we write from right to left
     var number = value;
-    var needsExplicitZero = number == 0;
 
     for (var pos = position + length - 2; pos >= position; pos--) {
-      if (number != 0) {
-        // Write the last octal digit of the number (e.g. the last 4 bits)
-        this[pos] = (number & 7) + $0;
-        // then drop the last digit (divide by 8 = 2³)
-        number >>= 3;
-      } else if (needsExplicitZero) {
-        this[pos] = $0;
-        needsExplicitZero = false;
-      } else {
-        // done, left-pad with spaces
-        this[pos] = $space;
-      }
+      // Write the last octal digit of the number (e.g. the last 3 bits)
+      this[pos] = (number & 7) + $0;
+      // then drop the last digit (divide by 8 = 2³)
+      number >>= 3;
     }
   }
 }

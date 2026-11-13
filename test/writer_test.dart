@@ -142,6 +142,22 @@ void main() {
     }
   });
 
+  group('can be read in strict mode', () {
+    for (final format in tar.OutputFormat.values) {
+      test(format.toString(), () async {
+        final bytes =
+            tar.tarConverterWith(format: format).convert(tar.TarEntry.data(
+                  tar.TarHeader(name: 'file.txt', mode: 420, size: 7),
+                  utf8.encode('content'),
+                ));
+
+        final reader = tar.TarReader(Stream.value(bytes), strict: true);
+        expect(await reader.moveNext(), isTrue);
+        expect(await reader.moveNext(), isFalse);
+      });
+    }
+  });
+
   test('writes huge files', () async {
     final oneMb = Uint8List(oneMbSize);
     const count = tenGbSize ~/ oneMbSize;

@@ -1,3 +1,8 @@
+## 2.1.1 (unreleased)
+
+- Write numeric header fields padded with zeroes instead of spaces, as required
+  by POSIX. This allows reading archives written by this package in strict mode.
+
 ## 2.1.0
 
 - Add opt-in `strict` option to harden the reader against ambiguous tar files.
